@@ -12,4 +12,7 @@ After: "user_6hoOwWlutwzIKWFCp54MUb"
 
 ## TODO
 
-- [ ] CLI application for generating and translating APIDs
+- [x] CLI application for generating and translating APIDs
+- [ ] Improve documentation of CLI command
+- [ ] Add apid generation to CLI
+- [ ] Improve CLI to use cobra style verbs (`apid gen`, `apid enc`, `apid dec`)

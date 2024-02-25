@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-var ErrInvalidApid = fmt.Errorf("invalid apid format")
+var ErrInvalidApid = fmt.Errorf("invalid APID format")
 
 var Nil = APID{}
 
