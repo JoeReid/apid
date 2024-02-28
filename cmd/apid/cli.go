@@ -71,5 +71,8 @@ func (c *CLI) encode(prefix, data string) (string, error) {
 		return "", fmt.Errorf("error parsing UUID %q: %w", data, err)
 	}
 
-	return apid.NewWithUUID(prefix, u).String(), nil
+	return (&apid.APID{
+		Prefix: prefix,
+		UUID:   u,
+	}).String(), nil
 }

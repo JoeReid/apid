@@ -16,3 +16,4 @@ After: "user_6hoOwWlutwzIKWFCp54MUb"
 - [ ] Improve documentation of CLI command
 - [ ] Add apid generation to CLI
 - [ ] Improve CLI to use cobra style verbs (`apid gen`, `apid enc`, `apid dec`)
+- [ ] Add support for custom separators to cli

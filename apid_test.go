@@ -6,48 +6,83 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func ExampleParse() {
-	apid, _ := Parse("test_6hoOwWlutwzIKWFCp54MUb")
+	a, _ := Parse("test_6hoOwWlutwzIKWFCp54MUb")
 
 	// Output:
 	// test ce5cc4ed-0201-4bd9-82b8-27ece33bce6b
-	fmt.Println(apid.Prefix, apid.UUID)
+	fmt.Println(a.Prefix, a.UUID)
 }
 
 func TestNew(t *testing.T) {
-	apid := New("test")
+	a := New("test")
 
-	assert.Equal(t, "test", apid.Prefix)
-	assert.NotNil(t, apid.UUID)
-	assert.NotEqual(t, uuid.Nil, apid.UUID)
-}
-
-func TestNewWithUUID(t *testing.T) {
-	uuid := uuid.MustParse("ce5cc4ed-0201-4bd9-82b8-27ece33bce6b")
-	apid := NewWithUUID("test", uuid)
-
-	assert.Equal(t, "test", apid.Prefix)
-	assert.Equal(t, uuid, apid.UUID)
+	assert.Equal(t, "test", a.Prefix)
+	assert.NotEqual(t, uuid.Nil, a.UUID)
+	assert.Equal(t, a.separator, DefaultSeparator)
 }
 
 func TestParse(t *testing.T) {
-	apid, err := Parse("test_6hoOwWlutwzIKWFCp54MUb")
-	require.NoError(t, err)
-
-	assert.Equal(t, APID{
-		Prefix: "test",
-		UUID:   uuid.MustParse("ce5cc4ed-0201-4bd9-82b8-27ece33bce6b"),
-	}, apid)
-}
-
-func TestAPID_String(t *testing.T) {
-	apid := APID{
-		Prefix: "test",
-		UUID:   uuid.MustParse("ce5cc4ed-0201-4bd9-82b8-27ece33bce6b"),
+	var tests = []struct {
+		input string
+		want  *APID
+		err   error
+	}{
+		{
+			input: "test_6hoOwWlutwzIKWFCp54MUb",
+			want: &APID{
+				Prefix:    "test",
+				UUID:      uuid.MustParse("ce5cc4ed-0201-4bd9-82b8-27ece33bce6b"),
+				separator: DefaultSeparator,
+			},
+			err: nil,
+		},
+		{
+			input: "test-6hoOwWlutwzIKWFCp54MUb",
+			want: &APID{
+				Prefix:    "test",
+				UUID:      uuid.MustParse("ce5cc4ed-0201-4bd9-82b8-27ece33bce6b"),
+				separator: "-",
+			},
+			err: nil,
+		},
+		{
+			input: "test.6hoOwWlutwzIKWFCp54MUb",
+			want: &APID{
+				Prefix:    "test",
+				UUID:      uuid.MustParse("ce5cc4ed-0201-4bd9-82b8-27ece33bce6b"),
+				separator: ".",
+			},
+			err: nil,
+		},
+		{
+			input: "test6hoOwWlutwzIKWFCp54MUb",
+			want:  nil,
+			err:   ErrInvalidAPID,
+		},
 	}
 
-	assert.Equal(t, "test_6hoOwWlutwzIKWFCp54MUb", apid.String())
+	for _, tt := range tests {
+		tt := tt
+
+		t.Run(tt.input, func(t *testing.T) {
+			got, err := Parse(tt.input)
+			assert.Equal(t, tt.err, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestWithSeparator(t *testing.T) {
+	u := uuid.New()
+
+	a2, err := WithSeparator(".", APID{Prefix: "test", UUID: u})
+	assert.NoError(t, err)
+	assert.Equal(t, &APID{
+		Prefix:    "test",
+		UUID:      u,
+		separator: ".",
+	}, a2)
 }
